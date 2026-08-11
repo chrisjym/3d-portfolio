@@ -5,6 +5,7 @@ import { DirectionalLight } from "./components/DirectionalLight";
 import { player } from "./components/Player";
 import { map, initializeMap } from "./components/Map";
 import { animatePlayer } from "./animatePlayer";
+import { getTerrainHeight } from "./utilities/getTerrainHeight";
 import { cameraOffset, cameraLookHeight } from "./constants";
 import "./collectUserInput";
 import "./style.css";
@@ -29,11 +30,14 @@ const renderer = Renderer();
 
 // Don't block the render loop on the map load — the player renders
 // immediately, and the map pops in once it's ready. Once it's in,
-// stand the player on top of its surface instead of overlapping it.
+// stand the player on the actual terrain surface under the spawn
+// tile (raycast), not the map's bounding-box top.
 initializeMap().then((mapModel) => {
   if (!mapModel) return;
-  const box = new THREE.Box3().setFromObject(mapModel);
-  player.position.y = box.max.y;
+  player.position.y = getTerrainHeight(
+    player.position.x,
+    player.position.z,
+  );
 });
 
 // Isometric chase camera: fixed diagonal offset from the player,

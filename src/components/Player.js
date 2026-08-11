@@ -58,6 +58,10 @@ export const position = {
 export const movesQueue = [];
 
 export function queueMove(direction) {
+  // Only one move in flight at a time — ignore new input until the
+  // current step finishes, rather than queuing moves ahead.
+  if (movesQueue.length > 0) return;
+
   const isValidMove = endsUpInValidPosition(
     {
       rowIndex: position.currentRow,
